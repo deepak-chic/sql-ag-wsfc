@@ -8,7 +8,7 @@ variable "primary_location_name" {
   default = ""
 }
 
-variable "secondry_location_name" {
+variable "secondary_location_name" {
   type    = string
   default = ""
 }
@@ -23,7 +23,7 @@ variable "primary_resource_group_name" {
   default = ""
 }
 
-variable "secondry_resource_group_name" {
+variable "secondary_resource_group_name" {
   type    = string
   default = ""
 }
@@ -33,7 +33,7 @@ variable "primary_vnet_name" {
   default = ""
 }
 
-variable "secondry_vnet_name" {
+variable "secondary_vnet_name" {
   type    = string
   default = ""
 }
@@ -43,7 +43,7 @@ variable "primary_vnet_peering_name" {
   default = ""
 }
 
-variable "secondry_vnet_peering_name" {
+variable "secondary_vnet_peering_name" {
   type    = string
   default = ""
 }
@@ -53,7 +53,7 @@ variable "primary_nsg_name" {
   default = ""
 }
 
-variable "secondry_nsg_name" {
+variable "secondary_nsg_name" {
   type    = string
   default = ""  
 }
@@ -73,17 +73,17 @@ variable "primary_sql_server_vm_public_ip_name" {
   default = ""  
 }
 
-variable "secondry_sql_server_vm_name" {
+variable "secondary_sql_server_vm_name" {
   type    = string
   default = ""
 }
 
-variable "secondry_sql_server_vm_nic_name" {
+variable "secondary_sql_server_vm_nic_name" {
   type    = string
   default = ""
 }
 
-variable "secondry_sql_server_vm_public_ip_name" {
+variable "secondary_sql_server_vm_public_ip_name" {
   type    = string
   default = ""  
 }

@@ -4,9 +4,9 @@ resource "azurerm_resource_group" "resourceGroupPrimary" {
   location = var.primary_location_name
 }
 
-resource "azurerm_resource_group" "resourceGroupSecondry" {
-  name     = "${var.secondry_resource_group_name}${local.prefixName}-001"
-  location = var.secondry_location_name
+resource "azurerm_resource_group" "resourceGroupSecondary" {
+  name     = "${var.secondary_resource_group_name}${local.prefixName}-001"
+  location = var.secondary_location_name
 }
 
 # Network Security Groups
@@ -27,10 +27,10 @@ resource "azurerm_network_security_group" "nsg_primary" {
   }
 }
 
-resource "azurerm_network_security_group" "nsg_secondry" {
-  name                = var.secondry_nsg_name
-  location            = var.secondry_location_name
-  resource_group_name = azurerm_resource_group.resourceGroupSecondry.name
+resource "azurerm_network_security_group" "nsg_secondary" {
+  name                = var.secondary_nsg_name
+  location            = var.secondary_location_name
+  resource_group_name = azurerm_resource_group.resourceGroupSecondary.name
   security_rule {
     name                       = "Inbound3389Allow"
     priority                   = 100
@@ -60,19 +60,19 @@ resource "azurerm_virtual_network" "vNetPrimary" {
   depends_on = [azurerm_resource_group.resourceGroupPrimary]
 }
 
-resource "azurerm_virtual_network" "vNetSecondry" {
-  name                = "${var.secondry_vnet_name}${local.prefixName}-001"
-  location            = var.secondry_location_name
-  resource_group_name = azurerm_resource_group.resourceGroupSecondry.name
+resource "azurerm_virtual_network" "vNetSecondary" {
+  name                = "${var.secondary_vnet_name}${local.prefixName}-001"
+  location            = var.secondary_location_name
+  resource_group_name = azurerm_resource_group.resourceGroupSecondary.name
   address_space       = ["10.165.2.0/27"]
 
   subnet {
     name           = "default"
     address_prefix = "10.165.2.0/27"
-    security_group = azurerm_network_security_group.nsg_secondry.id
+    security_group = azurerm_network_security_group.nsg_secondary.id
   }
 
-  depends_on = [azurerm_resource_group.resourceGroupSecondry]
+  depends_on = [azurerm_resource_group.resourceGroupSecondary]
 }
 
 # Virtual Network Peering
@@ -80,15 +80,15 @@ resource "azurerm_virtual_network_peering" "vnet_peering_primary" {
   name                         = var.primary_vnet_peering_name
   resource_group_name          = azurerm_resource_group.resourceGroupPrimary.name
   virtual_network_name         = azurerm_virtual_network.vNetPrimary.name
-  remote_virtual_network_id    = azurerm_virtual_network.vNetSecondry.id
+  remote_virtual_network_id    = azurerm_virtual_network.vNetSecondary.id
   allow_virtual_network_access = true
   allow_forwarded_traffic = true
 }
 
-resource "azurerm_virtual_network_peering" "vnet_peering_secondry" {
-  name                         = var.secondry_vnet_peering_name
-  resource_group_name          = azurerm_resource_group.resourceGroupSecondry.name
-  virtual_network_name         = azurerm_virtual_network.vNetSecondry.name
+resource "azurerm_virtual_network_peering" "vnet_peering_secondary" {
+  name                         = var.secondary_vnet_peering_name
+  resource_group_name          = azurerm_resource_group.resourceGroupSecondary.name
+  virtual_network_name         = azurerm_virtual_network.vNetSecondary.name
   remote_virtual_network_id    = azurerm_virtual_network.vNetPrimary.id
   allow_virtual_network_access = true
   allow_forwarded_traffic = true
@@ -110,18 +110,18 @@ module "primary_sql_server" {
   depends_on                       = [azurerm_virtual_network.vNetPrimary]
 }
 
-module "secondry_sql_server" {
+module "secondary_sql_server" {
   source                           = "./VirtualMachine"
-  server_vm_name                   = var.secondry_sql_server_vm_name
-  server_vm_nic_name               = var.secondry_sql_server_vm_nic_name
-  server_vm_public_ip_name         = var.secondry_sql_server_vm_public_ip_name
-  location_name                    = var.secondry_location_name
-  resource_group_name              = azurerm_resource_group.resourceGroupSecondry.name
-  subnet_id                        = one(azurerm_virtual_network.vNetSecondry.subnet).id
+  server_vm_name                   = var.secondary_sql_server_vm_name
+  server_vm_nic_name               = var.secondary_sql_server_vm_nic_name
+  server_vm_public_ip_name         = var.secondary_sql_server_vm_public_ip_name
+  location_name                    = var.secondary_location_name
+  resource_group_name              = azurerm_resource_group.resourceGroupSecondary.name
+  subnet_id                        = one(azurerm_virtual_network.vNetSecondary.subnet).id
   source_image_reference_publisher = "MicrosoftSQLServer"
   source_image_reference_offer     = "SQL2016SP2-WS2016"
   source_image_reference_sku       = "Enterprise"
-  depends_on                       = [azurerm_virtual_network.vNetSecondry]
+  depends_on                       = [azurerm_virtual_network.vNetSecondary]
 }
 
 module "application_server" {
@@ -160,8 +160,8 @@ module "domain_controller" {
 # 3. Update DNS server in both vNet
 # 4. Login all three servers and change SQL Authentication mode to SQL and enable sa login
 # 5. Update DNS server in all three VMs by "ipconfig /renew"
-# 6. Shift both VMs to the same domain and install failover cluster and Update free IP address from the subnet in cluster resources
-# 7. Create the cluster and add both servers to the cluster
+# 6. Shift both VMs to the same domain and install failover cluster 
+# 7. Create the cluster and add both servers to the cluster and Update free IP address from the subnet in cluster resources
 # 8. Turn on the High availability from the SQL confgiuration in both servers and shifted the SQL services to the domain user
 # 9. Download Adventure Works database in primary server
       #https://learn.microsoft.com/en-us/sql/samples/adventureworks-install-configure?view=sql-server-ver16&tabs=ssms
@@ -169,5 +169,6 @@ module "domain_controller" {
 # 11. Add the inbound firewall rule to allow Port 1433 and 5022 in both servers
 # 12. Create the availability group and add the database to the availability group
 # 13. Create the listener and choose another blank IP from subnet to add for listener
+# 14. Attach the listerner IPs into the SQL servers nic card
 # 14. Connect the listener from the application server and run update query and test both SQL server by running the select query
-# 15. Test the failover by restarting the primary and secondry SQL servers
+# 15. Test the failover by restarting the primary and secondary SQL servers
