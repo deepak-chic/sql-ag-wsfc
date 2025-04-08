@@ -152,23 +152,3 @@ module "domain_controller" {
   source_image_reference_sku       = "2022-Datacenter"
   depends_on                       = [azurerm_virtual_network.vNetPrimary]
 }
-
-
-# Steps
-# 1. Install AD
-# 2. Add user in the AD and add as domain/Admins
-# 3. Update DNS server in both vNet
-# 4. Login all three servers and change SQL Authentication mode to SQL and enable sa login
-# 5. Update DNS server in all three VMs by "ipconfig /renew"
-# 6. Shift both VMs to the same domain and install failover cluster 
-# 7. Create the cluster and add both servers to the cluster and Update free IP address from the subnet in cluster resources
-# 8. Turn on the High availability from the SQL confgiuration in both servers and shifted the SQL services to the domain user
-# 9. Download Adventure Works database in primary server
-      #https://learn.microsoft.com/en-us/sql/samples/adventureworks-install-configure?view=sql-server-ver16&tabs=ssms
-# 10. Restore the database in primary server and change recovery model to full and take a full backup
-# 11. Add the inbound firewall rule to allow Port 1433 and 5022 in both servers
-# 12. Create the availability group and add the database to the availability group
-# 13. Create the listener and choose another blank IP from subnet to add for listener
-# 14. Attach the listerner IPs into the SQL servers nic card
-# 14. Connect the listener from the application server and run update query and test both SQL server by running the select query
-# 15. Test the failover by restarting the primary and secondary SQL servers
