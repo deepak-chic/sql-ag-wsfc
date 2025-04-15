@@ -7,7 +7,17 @@
 
 ![](readme-images/SQLHAWithFC.jpg)
 
-This setup leverages Windows Server Failover Clustering (WSFC) to provide automatic failover and minimal downtime. SQL Server instances are configured under high availability group as clustered roles in WSFC, sharing storage across nodes to ensure data consistency and continuous availability in the event of hardware or OS failures.
+### Well, in any production environment, downtime is expensive — both in terms of money and user trust. SQL Server High Availability ensures that your database remains accessible, reliable, and resilient even if a server or component fails.
+
+**The main benefits include:**
+
+- Minimized Downtime: Your applications stay online even during hardware failures or maintenance.
+- Automatic Failover: If one node fails, another takes over with minimal disruption.
+- Data Protection: Keeps your data safe and synchronized across multiple nodes.
+- Improved Performance: Some configurations allow for read-only replicas to handle reporting workloads.
+- Compliance & SLA Readiness: Helps meet regulatory and business uptime requirements.
+
+So essentially, HA ensures your SQL Server is always there when your application or users need it.
 
 ## ⚙️ Architecture
 - **Platform**: Windows Server 2016+ 
