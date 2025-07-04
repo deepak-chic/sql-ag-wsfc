@@ -24,7 +24,7 @@ resource "azurerm_windows_virtual_machine" "sqlvm" {
   resource_group_name = var.resource_group_name
   size                = "Standard_B2as_v2"
   admin_username      = "adminuser"
-  admin_password      = "P@ssw0rd123!"
+  admin_password      = "P@ssw0rd123!*"
   network_interface_ids = [
     azurerm_network_interface.nic.id
   ]
